@@ -36,7 +36,6 @@ public class AddPatientController extends HttpServlet {
         patient.setName(req.getParameter("name"));
         patient.setDiagnosis(req.getParameter("diagnosis"));
         HttpSession session = req.getSession();
-        System.out.println(session.getAttribute("doctor_id"));
         patient.setDoctor(doctorService.get((Long) session.getAttribute("doctor_id")));
         patientService.create(patient);
         logger.info("A new patient has been added. Name - " + patient.getName());

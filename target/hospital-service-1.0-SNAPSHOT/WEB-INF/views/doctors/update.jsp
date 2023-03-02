@@ -22,7 +22,7 @@
                 <br><br>
                 <label><b>Login</b></label>
                 <br><br>
-                <input class="input_block" type="text" name="login" id="login" placeholder="jacob473" form="doctor">b
+                <input class="input_block" type="text" name="login" id="login" placeholder="jacob473" form="doctor">
                 <br><br>
                 <label><b>Password</b></label>
                 <br><br>
