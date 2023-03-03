@@ -1,5 +1,7 @@
 package hospital.service.impl;
 
+import static java.util.Arrays.stream;
+
 import hospital.dao.PatientDao;
 import hospital.exception.WrongInputException;
 import hospital.lib.Inject;
@@ -9,6 +11,7 @@ import hospital.service.DoctorService;
 import hospital.service.PatientService;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -74,6 +77,18 @@ public class PatientServiceImpl implements PatientService {
     @Override
     public List<Patient> getPatientsWithMedicine(Long medicineId) {
         return patientDao.getPatientsWithMedicine(medicineId);
+    }
+
+    @Override
+    public List<Patient> filterPatientsByDoctor(List<Patient> patients, Long doctorId) {
+        return patients.stream()
+                .filter(patient -> {
+                    if (patient.getDoctor() != null) {
+                        return patient.getDoctor().getId().equals(doctorId);
+                    }
+                    return false;
+                })
+                .collect(Collectors.toList());
     }
 
     private boolean checkFields(Patient patient) {

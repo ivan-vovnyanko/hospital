@@ -23,17 +23,11 @@ public class GetFreePatientsController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         HttpSession session = req.getSession();
+        Long medicineId = Long.valueOf(req.getParameter("id"));
         Long doctorId = (Long) session.getAttribute("doctor_id");
         List<Patient> patients = patientService
-                .getPatientsWithoutMedicine(Long.valueOf(req.getParameter("id")))
-                .stream()
-                .filter(patient -> {
-                    if (patient.getDoctor() != null) {
-                        return patient.getDoctor().getId().equals(doctorId);
-                    }
-                    return false;
-                })
-                .collect(Collectors.toList());
+                .getPatientsWithoutMedicine(medicineId);
+        patients = patientService.filterPatientsByDoctor(patients, doctorId);
         req.setAttribute("patients", patients);
         req.setAttribute("id", req.getParameter("id"));
         req.getRequestDispatcher("/WEB-INF/views/medicines/patients/all.jsp").forward(req, resp);

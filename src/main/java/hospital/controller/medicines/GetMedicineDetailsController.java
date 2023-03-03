@@ -1,5 +1,7 @@
 package hospital.controller.medicines;
 
+import static java.util.Arrays.stream;
+
 import hospital.lib.Injector;
 import hospital.model.Patient;
 import hospital.service.MedicineService;
@@ -26,19 +28,13 @@ public class GetMedicineDetailsController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         HttpSession session = req.getSession();
+        Long medicineId = Long.valueOf(req.getParameter("id"));
         Long doctorId = (Long) session.getAttribute("doctor_id");
         req.setAttribute("medicine",
                 medicineService.get(Long.valueOf(req.getParameter("id"))));
         List<Patient> patients = patientService
-                .getPatientsWithMedicine(Long.valueOf(req.getParameter("id")))
-                .stream()
-                .filter(patient -> {
-                    if (patient.getDoctor() != null) {
-                        return patient.getDoctor().getId().equals(doctorId);
-                    }
-                    return false;
-                })
-                .collect(Collectors.toList());
+                .getPatientsWithMedicine(medicineId);
+        patients = patientService.filterPatientsByDoctor(patients, doctorId);
         req.setAttribute("patients", patients);
         req.getRequestDispatcher("/WEB-INF/views/medicines/details.jsp").forward(req, resp);
     }
