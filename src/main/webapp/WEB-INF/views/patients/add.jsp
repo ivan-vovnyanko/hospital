@@ -10,19 +10,20 @@
     <body>
         <h2>New Patient</h2><br>
         <div class="main_block">
-        <form id="patient" method="post" action="${pageContext.request.contextPath}/patients/add">
-            <label><b>Patient name</b></label>
-            <br><br>
-            <input class="input_block" type="text" name="name" id="name" placeholder="Alice" form="patient">
-            <br><br>
-            <label><b>Diagnosis</b></label>
-            <br><br>
-            <input class="input_block" type="text" name="diagnosis" id="diagnosis" placeholder="Patient's diagnosis" form="patient">
-            <br><br><br>
-            <input class="submit_block" type="submit" name="submit" id="submit" value="Submit" form="patient">
-            <br><br>
-            <a class="logout_block" href="${pageContext.request.contextPath}/patients">Back</a>
-        </form>
-    </div>
+            <label><h4 style="color:red">${errorMsg}</h4></label>
+            <form id="patient" method="post" action="${pageContext.request.contextPath}/patients/add">
+                <label><b>Patient name</b></label>
+                <br><br>
+                <input class="input_block" type="text" name="name" id="name" placeholder="Alice" form="patient">
+                <br><br>
+                <label><b>Diagnosis</b></label>
+                <br><br>
+                <input class="input_block" type="text" name="diagnosis" id="diagnosis" placeholder="Patient's diagnosis" form="patient">
+                <br><br><br>
+                <input class="submit_block" type="submit" name="submit" id="submit" value="Submit" form="patient">
+                <br><br>
+                <a class="logout_block" href="${pageContext.request.contextPath}/patients">Back</a>
+            </form>
+        </div>
     </body>
 </html>

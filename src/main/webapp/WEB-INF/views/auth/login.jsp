@@ -10,6 +10,7 @@
     <body>
         <h2>Login</h2><br>
         <div class="main_block">
+            <label><h4 style="color:red">${errorMsg}</h4></label>
             <form id="login" method="post" action="${pageContext.request.contextPath}/login">
                 <label><b>User Name</b></label>
                 <br><br>

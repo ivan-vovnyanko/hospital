@@ -1,5 +1,6 @@
 package hospital.controller.patients;
 
+import hospital.exception.WrongInputException;
 import hospital.lib.Injector;
 import hospital.model.Patient;
 import hospital.service.DoctorService;
@@ -37,7 +38,12 @@ public class AddPatientController extends HttpServlet {
         patient.setDiagnosis(req.getParameter("diagnosis"));
         HttpSession session = req.getSession();
         patient.setDoctor(doctorService.get((Long) session.getAttribute("doctor_id")));
-        patientService.create(patient);
+        try {
+            patientService.create(patient);
+        } catch (WrongInputException e) {
+            req.setAttribute("errorMsg", e.getMessage());
+            req.getRequestDispatcher("/WEB-INF/views/patients/add.jsp").forward(req, resp);
+        }
         logger.info("A new patient has been added. Name - " + patient.getName());
         resp.sendRedirect("/patients");
     }

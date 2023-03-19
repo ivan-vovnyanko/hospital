@@ -28,4 +28,11 @@ public class Medicine {
         this.name = name;
     }
 
+    @Override
+    public String toString() {
+        return "Medicine{"
+                + "id=" + id
+                + ", name='" + name + '\''
+                + '}';
+    }
 }

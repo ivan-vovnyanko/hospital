@@ -75,10 +75,10 @@ public class DoctorDaoImpl implements DoctorDao {
         String query = "UPDATE doctors "
                 + "SET is_deleted = true "
                 + "WHERE doctor_id = ?;";
+        deleteDoctorFromPatient(doctorId);
         try (Connection connection = ConnectionUtil.getConnection();
                 PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setLong(1, doctorId);
-            deleteDoctorFromPatient(doctorId);
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.error("Couldn't delete doctor by id = " + doctorId);
@@ -151,6 +151,25 @@ public class DoctorDaoImpl implements DoctorDao {
             logger.error("Couldn't delete doctor from patient. Doctor id: " + doctorId);
             throw new DataProcessingException("Couldn't delete doctor from patient. Doctor id: "
                     + doctorId + e);
+        }
+    }
+
+    @Override
+    public boolean isPresentByLogin(String login) {
+        String query = "SELECT * "
+                + "FROM doctors WHERE is_deleted = false AND login = ?";
+        try (Connection connection = ConnectionUtil.getConnection();
+                PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, login);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return true;
+            }
+            return false;
+        } catch (SQLException e) {
+            logger.error("Couldn't get doctor by login. Doctor login: " + login);
+            throw new DataProcessingException("Couldn't get doctor by login. Doctor login: "
+                    + login + e);
         }
     }
 }

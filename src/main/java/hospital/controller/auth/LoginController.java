@@ -1,5 +1,6 @@
 package hospital.controller.auth;
 
+import hospital.exception.AuthenticationException;
 import hospital.lib.Injector;
 import hospital.model.Doctor;
 import hospital.service.AuthenticationService;
@@ -31,8 +32,14 @@ public class LoginController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        Doctor doctor = authenticationService.login(req.getParameter("username"),
-                req.getParameter("password"));
+        Doctor doctor = null;
+        try {
+            doctor = authenticationService.login(req.getParameter("username"),
+                    req.getParameter("password"));
+        } catch (AuthenticationException e) {
+            req.setAttribute("errorMsg", e.getMessage());
+            req.getRequestDispatcher("/WEB-INF/views/auth/login.jsp").forward(req, resp);
+        }
         HttpSession session = req.getSession();
         session.setAttribute("doctor_id", doctor.getId());
         logger.info("The doctor was authorized with login - " + doctor.getLogin());

@@ -6,7 +6,6 @@ import hospital.exception.DataProcessingException;
 import hospital.lib.Dao;
 import hospital.lib.Inject;
 import hospital.model.Medicine;
-import hospital.model.Patient;
 import hospital.util.ConnectionUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -54,7 +53,6 @@ public class MedicineDaoImpl implements MedicineDao {
         try (Connection connection = ConnectionUtil.getConnection();
                 PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setLong(1, medicineId);
-            deleteMedicineRelations(medicineId);
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.error("Couldn't delete medicine with id " + medicineId);
@@ -78,29 +76,6 @@ public class MedicineDaoImpl implements MedicineDao {
                     + medicine.getName());
             throw new DataProcessingException("Couldn't update medicine with id "
                     + medicine.getId() + e);
-        }
-    }
-
-    @Override
-    public List<Patient> getPatientsByMedicine(Long medicineId) {
-        String query = "SELECT * FROM patients_medicines "
-                + "JOIN patients ON patients_medicines.patient_id = patients.patient_id "
-                + "WHERE medicine_id = ? AND patients.is_deleted = false";
-        try (Connection connection = ConnectionUtil.getConnection();
-                PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setLong(1, medicineId);
-            ResultSet resultSet = statement.executeQuery();
-            List<Patient> patients = new ArrayList<>();
-            while (resultSet.next()) {
-                patients.add(patientDao
-                        .get(resultSet.getLong("patient_id"))
-                        .orElseThrow(() -> new DataProcessingException("Invalid aptient")));
-            }
-            return patients;
-        } catch (SQLException e) {
-            logger.error("Couldn't get patients by medicine with id " + medicineId);
-            throw new DataProcessingException("Couldn't get patients by medicine with id "
-                    + medicineId + e);
         }
     }
 
@@ -144,20 +119,6 @@ public class MedicineDaoImpl implements MedicineDao {
         }
     }
 
-    @Override
-    public boolean unlinkPatient(Long medicineId, Long patientId) {
-        String query = "DELETE FROM patients_medicines WHERE medicine_id = ? AND patient_id = ?;";
-        try (Connection connection = ConnectionUtil.getConnection();
-                PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setLong(1, medicineId);
-            statement.setLong(2, patientId);
-            return statement.executeUpdate() > 0;
-        } catch (SQLException e) {
-            logger.error("Couldn't unlink patient");
-            throw new DataProcessingException("Couldn't unlink patient" + e);
-        }
-    }
-
     private Medicine getMedicineByResultSet(ResultSet resultSet) {
         try {
             Medicine medicine = new Medicine();
@@ -167,18 +128,6 @@ public class MedicineDaoImpl implements MedicineDao {
         } catch (SQLException e) {
             logger.error("Couldn't get medicine by result set");
             throw new DataProcessingException("Couldn't get medicine by result set." + e);
-        }
-    }
-
-    private void deleteMedicineRelations(Long medicineId) {
-        String query = "DELETE FROM patients_medicines WHERE medicine_id = ?;";
-        try (Connection connection = ConnectionUtil.getConnection();
-                PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setLong(1, medicineId);
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            logger.error("Couldn't delete all medicine relations");
-            throw new DataProcessingException("Couldn't delete all medicine relations" + e);
         }
     }
 }

@@ -1,5 +1,6 @@
 package hospital.controller.auth;
 
+import hospital.exception.WrongInputException;
 import hospital.lib.Injector;
 import hospital.model.Doctor;
 import hospital.service.DoctorService;
@@ -29,10 +30,15 @@ public class RegisterController extends HttpServlet {
         doctor.setBirthDate(LocalDate.parse(req.getParameter("birth_date")));
         doctor.setLogin(req.getParameter("username"));
         doctor.setPassword(req.getParameter("password"));
-        doctor = doctorService.create(doctor);
-        logger.info("A new doctor was registered. Name - " + doctor.getName());
-        req.getSession().setAttribute("doctor_id", doctor.getId());
-        resp.sendRedirect("/");
+        try {
+            doctor = doctorService.create(doctor);
+            logger.info("A new doctor was registered. Name - " + doctor.getName());
+            req.getSession().setAttribute("doctor_id", doctor.getId());
+            resp.sendRedirect("/");
+        } catch (WrongInputException e) {
+            req.setAttribute("errorMsg", e.getMessage());
+            req.getRequestDispatcher("/WEB-INF/views/auth/register.jsp").forward(req, resp);
+        }
     }
 
     @Override

@@ -7,9 +7,9 @@ import hospital.lib.Service;
 import hospital.model.Patient;
 import hospital.service.DoctorService;
 import hospital.service.PatientService;
+import hospital.service.PrescriptionService;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,6 +20,8 @@ public class PatientServiceImpl implements PatientService {
     private PatientDao patientDao;
     @Inject
     private DoctorService doctorService;
+    @Inject
+    private PrescriptionService prescriptionService;
 
     @Override
     public Patient create(Patient element) {
@@ -33,12 +35,9 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public Patient get(Long id) {
-        if (patientDao.get(id).isPresent()) {
-            return patientDao.get(id).get();
-        } else {
+        return patientDao.get(id).orElseThrow(() -> {
             logger.error("Couldn't get patient with id - " + id);
-            throw new NoSuchElementException("Couldn't get patient with id - " + id);
-        }
+            throw new NoSuchElementException("Couldn't get patient with id - " + id); });
     }
 
     @Override
@@ -59,34 +58,13 @@ public class PatientServiceImpl implements PatientService {
     @Override
     public boolean delete(Long id) {
         logger.info("Delete method was called. Id - " + id);
+        prescriptionService.deleteAllByPatient(id);
         return patientDao.delete(id);
     }
 
     @Override
     public List<Patient> getPatientsByDoctor(Long doctorId) {
         return patientDao.getPatientsByDoctor(doctorId);
-    }
-
-    @Override
-    public List<Patient> getPatientsWithoutMedicine(Long medicineId) {
-        return patientDao.getPatientsWithoutMedicine(medicineId);
-    }
-
-    @Override
-    public List<Patient> getPatientsWithMedicine(Long medicineId) {
-        return patientDao.getPatientsWithMedicine(medicineId);
-    }
-
-    @Override
-    public List<Patient> filterPatientsByDoctor(List<Patient> patients, Long doctorId) {
-        return patients.stream()
-                .filter(patient -> {
-                    if (patient.getDoctor() != null) {
-                        return patient.getDoctor().getId().equals(doctorId);
-                    }
-                    return false;
-                })
-                .collect(Collectors.toList());
     }
 
     private boolean checkFields(Patient patient) {

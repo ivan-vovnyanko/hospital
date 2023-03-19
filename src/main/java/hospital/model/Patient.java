@@ -1,7 +1,5 @@
 package hospital.model;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class Patient {
@@ -9,17 +7,14 @@ public class Patient {
     private Doctor doctor;
     private String name;
     private String diagnosis;
-    private List<Medicine> medicines;
 
     public Patient() {
-        medicines = new ArrayList<>();
     }
 
     public Patient(Doctor doctor, String name, String diagnosis) {
         this.doctor = doctor;
         this.name = name;
         this.diagnosis = diagnosis;
-        this.medicines = new ArrayList<>();
     }
 
     public Long getId() {
@@ -54,14 +49,6 @@ public class Patient {
         this.diagnosis = diagnosis;
     }
 
-    public List<Medicine> getMedicines() {
-        return medicines;
-    }
-
-    public void setMedicines(List<Medicine> medicines) {
-        this.medicines = medicines;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -74,12 +61,21 @@ public class Patient {
         return Objects.equals(id, patient.id)
                 && Objects.equals(doctor, patient.doctor)
                 && Objects.equals(name, patient.name)
-                && Objects.equals(diagnosis, patient.diagnosis)
-                && Objects.equals(medicines, patient.medicines);
+                && Objects.equals(diagnosis, patient.diagnosis);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, doctor, name, diagnosis, medicines);
+        return Objects.hash(id, doctor, name, diagnosis);
+    }
+
+    @Override
+    public String toString() {
+        return "Patient{"
+                + "id=" + id
+                + ", doctor=" + doctor
+                + ", name='" + name + '\''
+                + ", diagnosis='" + diagnosis + '\''
+                + '}';
     }
 }

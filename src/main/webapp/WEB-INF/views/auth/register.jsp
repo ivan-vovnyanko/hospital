@@ -10,6 +10,7 @@
     <body>
         <h2>Register Doctor Page</h2><br>
         <div class="main_block">
+            <label><h4 style="color:red">${errorMsg}</h4></label>
             <form id="register" method="post" action="${pageContext.request.contextPath}/register">
                 <label><b>Your name</b></label>
                 <br><br>
